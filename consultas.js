@@ -1,22 +1,36 @@
-const { Pool } = require("pg");
+/* const { Pool } = require("pg"); */
 const bcrypt = require('bcrypt');
 require('dotenv').config({ path: 'variables.env' })
 // configuracion de la instancia Pool
-const pool = new Pool({
+/* const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
   dialect: 'postgres',
+  native: true,
+  ssl: true,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
+  dialectOptions: {ssl: true}
+}); */
+
+const { Client } = require('pg');
+
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
+
+client.connect();
 
 
 
 // Función asincrónica para consultar todos los usuarios
 const getUsuarios = async () => {
   try {
-    const usuarios = await pool.query("SELECT * FROM skaters");
+    const usuarios = await client.query("SELECT * FROM skaters");
     return usuarios.rows;
   } catch (e) {
     console.log(e);
@@ -49,7 +63,7 @@ RETURNING *`,
     ],
   };
   try {
-    const result = await pool.query(params);
+    const result = await client.query(params);
     
 
   } catch (e) {
@@ -64,7 +78,7 @@ const setUsuarioStatus = async (estado, id) => {
       text: "UPDATE skaters SET estado = $1 WHERE id = $2 RETURNING *",
       values: [estado, id],
     };
-    const result = await pool.query(params);
+    const result = await client.query(params);
     const usuario = result.rows[0];
     return usuario;
   } catch (e) {
@@ -80,7 +94,7 @@ async function getUsuario(email, password) {
       text: 'SELECT * FROM skaters WHERE email = $1',
       values: [email]
     }
-    const result = await pool.query(params);
+    const result = await client.query(params);
     if (result.rowCount > 0) {
       const isSame = await bcrypt.compare(password, result.rows[0].password);
       console.log("isSame: ", isSame);
@@ -114,7 +128,7 @@ const setDatosUsuario = async (
       text: `UPDATE skaters SET nombre = $1, password =$2, anos_experiencia = $3, especialidad = $4  WHERE email = $5 RETURNING *`,
       values: [nombre, passwordHash, anos_experiencia, especialidad, email],
     };
-    const result = await pool.query(params);
+    const result = await client.query(params);
 
     const usuario = result.rows;
     return usuario;
@@ -130,7 +144,7 @@ const deleteCuenta = async (email)=> {
       text:'DELETE FROM skaters WHERE email = $1',
       values: [email]
     }
-    const result = await pool.query(params)
+    const result = await client.query(params)
     return result.rowCount;
   } catch (e) {
     console.log(e);

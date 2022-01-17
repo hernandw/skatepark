@@ -6,6 +6,7 @@ const expressFileUpload = require("express-fileupload");
 const jwt = require("jsonwebtoken");
 const secretKey = process.env.SECRET_KEY
 const PORT = process.env.PORT || 3000
+
 const host = process.env.HOST || '0.0.0.0'
 const path = require("path");
 const {
