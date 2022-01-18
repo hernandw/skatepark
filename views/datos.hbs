@@ -68,7 +68,7 @@
       }
 
       try {
-        await axios.put('http://localhost:3000/datos', payload)
+        await axios.put('/datos', payload)
           .then(() => {
             alert('Datos actualizados con éxito')
           })
@@ -83,10 +83,10 @@
 
   const deleteCuenta = async () => {
     try {
-      await axios.delete(`http://localhost:3000/eliminar_cuenta/${email.value}`)
+      await axios.delete(`/eliminar_cuenta/${email.value}`)
         .then(() => {
           alert('Cuenta eliminada con éxito');
-          window.location.href = `http://localhost:3000/login`
+          window.location.href = '/login'
         })
     } catch ({ response }) {
       const { data } = response
