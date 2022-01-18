@@ -1,31 +1,16 @@
-/* const { Pool } = require("pg"); */
-const bcrypt = require('bcrypt');
-require('dotenv').config({ path: 'variables.env' })
-// configuracion de la instancia Pool
-/* const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  dialect: 'postgres',
-  native: true,
-  ssl: true,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  dialectOptions: {ssl: true}
-}); */
+const bcrypt = require("bcrypt");
+require("dotenv").config({ path: "variables.env" });
 
-const { Client } = require('pg');
+const { Client } = require("pg");
 
 const client = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false
-  }
+    rejectUnauthorized: false,
+  },
 });
 
 client.connect();
-
-
 
 // Función asincrónica para consultar todos los usuarios
 const getUsuarios = async () => {
@@ -64,8 +49,6 @@ RETURNING *`,
   };
   try {
     const result = await client.query(params);
-    
-
   } catch (e) {
     console.log(e);
   }
@@ -86,26 +69,22 @@ const setUsuarioStatus = async (estado, id) => {
   }
 };
 
-
-
 async function getUsuario(email, password) {
   try {
     let params = {
-      text: 'SELECT * FROM skaters WHERE email = $1',
-      values: [email]
-    }
+      text: "SELECT * FROM skaters WHERE email = $1",
+      values: [email],
+    };
     const result = await client.query(params);
     if (result.rowCount > 0) {
       const isSame = await bcrypt.compare(password, result.rows[0].password);
       console.log("isSame: ", isSame);
       if (isSame) {
         return result.rows;
-      }
-      else {
+      } else {
         return [];
       }
-    }
-    else {
+    } else {
       return result.rows;
     }
   } catch (e) {
@@ -138,28 +117,25 @@ const setDatosUsuario = async (
 };
 
 //ruta para eliminar usuario
-const deleteCuenta = async (email)=> {
+const deleteCuenta = async (email) => {
   try {
     let params = {
-      text:'DELETE FROM skaters WHERE email = $1',
-      values: [email]
-    }
-    const result = await client.query(params)
+      text: "DELETE FROM skaters WHERE email = $1",
+      values: [email],
+    };
+    const result = await client.query(params);
     return result.rowCount;
   } catch (e) {
     console.log(e);
   }
-  
-   
-}
+};
 
 //hash para encriptar el password
-const hashPassword = async (password)=> {
+const hashPassword = async (password) => {
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
   return hash;
-}
-
+};
 
 module.exports = {
   nuevoUsuario,
@@ -168,4 +144,4 @@ module.exports = {
   getUsuario,
   setDatosUsuario,
   deleteCuenta,
-}
+};

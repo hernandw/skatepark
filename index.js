@@ -1,13 +1,13 @@
 const express = require("express");
 const app = express();
-require('dotenv').config({ path: 'variables.env' });
+require("dotenv").config({ path: "variables.env" });
 const exphbs = require("express-handlebars");
 const expressFileUpload = require("express-fileupload");
 const jwt = require("jsonwebtoken");
-const secretKey = process.env.SECRET_KEY
-const PORT = process.env.PORT || 3000
+const secretKey = process.env.SECRET_KEY;
+const PORT = process.env.PORT || 3000;
 
-const host = process.env.HOST || '0.0.0.0'
+const host = process.env.HOST || "0.0.0.0";
 const path = require("path");
 const {
   nuevoUsuario,
